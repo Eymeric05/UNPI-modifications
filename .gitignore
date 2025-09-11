@@ -1,0 +1,32 @@
+# Fichiers de configuration sensibles
+.env
+.env.local
+.env.production
+.env.staging
+
+# Logs
+*.log
+logs/
+
+# Fichiers temporaires
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Fichiers d'éditeur
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies (si vous utilisez Composer)
+vendor/
+
+# Cache
+cache/
+tmp/
+
+# Fichiers de sauvegarde
+*.bak
+*.backup
