@@ -1,0 +1,8 @@
+[phases.setup]
+packages = ["nginx", "php-fpm"]
+
+[phases.build]
+commands = ["echo 'build steps...'"]
+
+[phases.start]
+commands = ["nginx -g 'daemon off;'"]
