@@ -210,11 +210,7 @@
         <h2 class="main-title">FORMULAIRE DE VOTE PAR CORRESPONDANCE</h2>
 
         <!-- Instructions Section -->
-        <div class="instructions-section">
-            <p>Remplissez le formulaire ci-dessous pour voter par correspondance :</p>
-            <p><strong>Votre vote sera envoyé par mail à :</strong> unpi5962@orange.fr</p>
-            <div class="deadline">DATE LIMITE DE LA PRISE EN COMPTE DES VOTES: 26 SEPTEMBRE 2025</div>
-        </div>
+            <div class="deadline">DATE LIMITE DE LA PRISE EN COMPTE DES VOTES: 29 SEPTEMBRE 2025</div>
         <!-- Voter Information -->
         <div class="voter-info">
             <div class="form-group">

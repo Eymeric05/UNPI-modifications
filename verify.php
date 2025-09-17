@@ -21,9 +21,9 @@ $champs_correspondances = array(
     'adresse' => 'Adresse',
     'ville' => 'Ville',
     'codepostal' => 'Code Postal',
-    'nbpersonne' => 'Nombre de personnes',
+    'nbpersonne' => 'Nombre de participants',
     'job' => 'Profession',
-    'subject' => 'Sujet',
+    'subject' => 'Format de réception / Sujet',
     'discover' => 'Comment nous avez-vous connus ?',
     'message' => 'Message',
     'vote_1' => 'Vote - Approbation PV AG 25 Mai 2024',
@@ -130,8 +130,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token_response'])) {
         $message_body = '<html><head><meta charset="utf-8"></head><body>';
         $message_body .= '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">';
         $message_body .= '<h2 style="color: #1161AA; border-bottom: 2px solid #1161AA; padding-bottom: 10px;">📧 ' . $page_name . '</h2>';
+        
+        // Déterminer le titre de la section selon le type de formulaire
+        $section_title = 'Informations';
+        if (strpos($page_name, 'Vote') !== false) {
+            $section_title = 'Informations du votant';
+        } elseif (strpos($page_name, 'Assemblée') !== false) {
+            $section_title = 'Informations du participant';
+        } elseif (strpos($page_name, 'adhesion') !== false || strpos($page_name, 'renouvellement') !== false) {
+            $section_title = 'Informations du membre';
+        }
+        
         $message_body .= '<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">';
-        $message_body .= '<h3 style="color: #333; margin-top: 0;">Informations du votant</h3>';
+        $message_body .= '<h3 style="color: #333; margin-top: 0;">' . $section_title . '</h3>';
 
         foreach ($champs_correspondances as $key => $label) {
             if (isset($_POST[$key]) && trim($_POST[$key]) !== '') {
@@ -157,6 +168,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token_response'])) {
                     }
                     $message_body .= '<p><b>' . $vote_labels[$key] . ' :</b> ' . $vote_value . '</p>';
                 }
+                // Gestion spéciale pour le nombre de participants (Assemblée Générale)
+                elseif ($key === 'nbpersonne' && strpos($page_name, 'Assemblée') !== false) {
+                    $message_body .= '<p><b>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . ' :</b> ' . $value . ' personne(s) - <strong>Prix total : ' . ($value * 15) . ' € TTC</strong></p>';
+                }
                 // Display line breaks correctly in HTML email for multi-line fields
                 elseif ($key === 'message' || $key === 'adresse') {
                      $message_body .= '<p><b>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . ' :</b><br>' . nl2br($value) . '</p>';
@@ -166,13 +181,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token_response'])) {
             }
         }
         $message_body .= '</div>'; // Ferme la section informations
+        
+        // Note personnalisée selon le type de formulaire
+        $note_text = '';
+        if (strpos($page_name, 'Vote') !== false) {
+            $note_text = 'Ce vote a été envoyé électroniquement via le formulaire de vote par correspondance.';
+        } elseif (strpos($page_name, 'Assemblée') !== false) {
+            $note_text = 'Cette inscription a été envoyée électroniquement. Le paiement devra être effectué sur le lien fourni après confirmation.';
+        } elseif (strpos($page_name, 'adhesion') !== false) {
+            $note_text = 'Cette demande d\'adhésion a été envoyée électroniquement. Vous allez être redirigé vers le paiement.';
+        } elseif (strpos($page_name, 'renouvellement') !== false) {
+            $note_text = 'Cette demande de renouvellement a été envoyée électroniquement. Vous allez être redirigé vers le paiement.';
+        } elseif (strpos($page_name, 'contact') !== false) {
+            $note_text = 'Ce message a été envoyé via le formulaire de contact du site.';
+        } else {
+            $note_text = 'Ce message a été envoyé électroniquement via le site UNPI Nord.';
+        }
+        
         $message_body .= '<div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #ffc107;">';
-        $message_body .= '<p style="margin: 0; font-size: 12px; color: #856404;"><strong>Note :</strong> Ce vote a été envoyé électroniquement via le formulaire de vote par correspondance.</p>';
+        $message_body .= '<p style="margin: 0; font-size: 12px; color: #856404;"><strong>Note :</strong> ' . $note_text . '</p>';
         $message_body .= '</div>';
         $message_body .= '</div>'; // Ferme le container principal
         $message_body .= '</body></html>';
 
-        $subject = "Nouveau message depuis " . $page_name;
+        // Sujet personnalisé selon le type de formulaire
+        if (strpos($page_name, 'Vote') !== false) {
+            $subject = "🗳️ Nouveau vote par correspondance - " . $page_name;
+        } elseif (strpos($page_name, 'Assemblée') !== false) {
+            $subject = "📋 Nouvelle inscription Assemblée Générale - " . $page_name;
+        } elseif (strpos($page_name, 'adhesion') !== false) {
+            $subject = "👤 Nouvelle demande d'adhésion - " . $page_name;
+        } elseif (strpos($page_name, 'renouvellement') !== false) {
+            $subject = "🔄 Nouvelle demande de renouvellement - " . $page_name;
+        } elseif (strpos($page_name, 'contact') !== false) {
+            $subject = "📧 Nouveau message de contact - " . $page_name;
+        } else {
+            $subject = "📧 Nouveau message depuis " . $page_name;
+        }
 
         $headers = 'MIME-Version: 1.0' . "\r\n";
         $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";

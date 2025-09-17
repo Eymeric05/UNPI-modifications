@@ -54,6 +54,7 @@
                             </ul>
                             <div class="center-holder">
                                 <a href="vote-correspondance" class="position-relative primary-button button-md mt-10">VOTER EN LIGNE</a>
+                                <a href="assets/img/Formulaire-de-vote-AG2025.pdf" download="Formulaire-de-vote-AG2025.pdf" class="position-relative primary-button button-md mt-10">TÉLÉCHARGER</a>
                             </div>
                         </div>
                     </div>
